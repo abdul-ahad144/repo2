@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-from utils.metrics import *
+from utils.metrics import interview_success_rate, round_efficiency
 
 def dashboard():
 
@@ -26,7 +26,7 @@ def dashboard():
     df = load_data()
     df.columns = df.columns.str.strip()
 
-    # -------- SIDEBAR --------
+    # -------- SIDEBAR FILTERS --------
     st.sidebar.header("🔍 Filters")
 
     domain = st.sidebar.multiselect("Domain", df["Domain"].unique())
@@ -64,32 +64,40 @@ def dashboard():
     # -------- TAB 1: FUNNEL --------
     with tab1:
         st.subheader("📉 Placement Funnel")
-        st.bar_chart({
+
+        funnel_data = {
             "Applied": df["Applied"].sum(),
             "Shortlisted": df["Shortlisted"].sum(),
             "Interview": df["Interview_Attended"].sum(),
             "Offer": df["Offer_Received"].sum(),
             "Joined": df["Joined"].sum()
-        })
+        }
+        st.bar_chart(funnel_data)
 
         st.markdown("---")
 
     # -------- TAB 2: FAILURES --------
     with tab2:
-        st.subheader("🔥 Failure Stages")
-        st.bar_chart(df["Failed_Stage"].value_counts())
+        st.subheader("🔥 Failure Stage Distribution")
+
+        failure_data = df["Failed_Stage"].value_counts()
+        st.bar_chart(failure_data)
 
         st.markdown("---")
 
     # -------- TAB 3: ROLES & SALARY --------
     with tab3:
 
-        st.subheader("📊 Job Roles Distribution")
-        st.bar_chart(df["Job_Role"].value_counts())
+        # FIXED GRAPH (NO FLAT ISSUE)
+        st.subheader("📊 Job Roles vs Placement")
+
+        role_data = df.groupby("Job_Role")["Joined"].sum()
+        st.bar_chart(role_data)
 
         st.markdown("---")
 
         st.subheader("💰 Salary Distribution")
+
         fig, ax = plt.subplots()
         ax.hist(df["Salary_LPA"], bins=30)
         ax.set_title("Salary Distribution")
@@ -106,17 +114,20 @@ def dashboard():
 
         if "Skill_Programs" in df.columns:
             st.markdown("### Skill Programs Impact")
-            st.bar_chart(df.groupby("Skill_Programs")["Joined"].mean())
+            skill_data = df.groupby("Skill_Programs")["Joined"].mean()
+            st.bar_chart(skill_data)
             st.markdown("---")
 
         if "Internships" in df.columns:
             st.markdown("### Internships Impact")
-            st.bar_chart(df.groupby("Internships")["Joined"].mean())
+            intern_data = df.groupby("Internships")["Joined"].mean()
+            st.bar_chart(intern_data)
             st.markdown("---")
 
         if "Projects" in df.columns:
             st.markdown("### Projects Impact")
-            st.bar_chart(df.groupby("Projects")["Joined"].mean())
+            project_data = df.groupby("Projects")["Joined"].mean()
+            st.bar_chart(project_data)
             st.markdown("---")
 
     # -------- PROBABILITY --------
