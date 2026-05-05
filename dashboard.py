@@ -48,7 +48,6 @@ def dashboard():
     st.subheader("📊 Overview")
 
     col1, col2, col3, col4 = st.columns(4)
-
     col1.metric("Students", len(df))
     col2.metric("Success Rate", f"{interview_success_rate(df):.2%}")
     col3.metric("Efficiency", f"{round_efficiency(df):.2%}")
@@ -62,8 +61,9 @@ def dashboard():
         "🧠 Skills"
     ])
 
-    # -------- TAB 1 --------
+    # -------- TAB 1: FUNNEL --------
     with tab1:
+        st.subheader("📉 Placement Funnel")
         st.bar_chart({
             "Applied": df["Applied"].sum(),
             "Shortlisted": df["Shortlisted"].sum(),
@@ -72,15 +72,22 @@ def dashboard():
             "Joined": df["Joined"].sum()
         })
 
-    # -------- TAB 2 --------
+        st.markdown("---")
+
+    # -------- TAB 2: FAILURES --------
     with tab2:
+        st.subheader("🔥 Failure Stages")
         st.bar_chart(df["Failed_Stage"].value_counts())
 
-    # -------- TAB 3 (FIXED) --------
+        st.markdown("---")
+
+    # -------- TAB 3: ROLES & SALARY --------
     with tab3:
 
         st.subheader("📊 Job Roles Distribution")
         st.bar_chart(df["Job_Role"].value_counts())
+
+        st.markdown("---")
 
         st.subheader("💰 Salary Distribution")
         fig, ax = plt.subplots()
@@ -90,16 +97,27 @@ def dashboard():
         ax.set_ylabel("Frequency")
         st.pyplot(fig)
 
-    # -------- TAB 4 --------
+        st.markdown("---")
+
+    # -------- TAB 4: SKILLS --------
     with tab4:
+
+        st.subheader("🧠 Skills Impact on Placement")
+
         if "Skill_Programs" in df.columns:
+            st.markdown("### Skill Programs Impact")
             st.bar_chart(df.groupby("Skill_Programs")["Joined"].mean())
+            st.markdown("---")
 
         if "Internships" in df.columns:
+            st.markdown("### Internships Impact")
             st.bar_chart(df.groupby("Internships")["Joined"].mean())
+            st.markdown("---")
 
         if "Projects" in df.columns:
+            st.markdown("### Projects Impact")
             st.bar_chart(df.groupby("Projects")["Joined"].mean())
+            st.markdown("---")
 
     # -------- PROBABILITY --------
     st.markdown("## 🎯 Placement Probability Calculator")
