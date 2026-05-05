@@ -95,16 +95,18 @@ def dashboard():
     with tab2:
         st.bar_chart(df["Failed_Stage"].value_counts())
 
-    with tab3:
-        col1, col2 = st.columns(2)
+with tab3:
 
-        with col1:
-            st.bar_chart(df["Job_Role"].value_counts())
+    st.subheader("📊 Job Roles Distribution")
+    st.bar_chart(df["Job_Role"].value_counts())
 
-        with col2:
-            fig, ax = plt.subplots()
-            ax.hist(df["Salary_LPA"], bins=30)
-            st.pyplot(fig)
+    st.subheader("💰 Salary Distribution")
+    fig, ax = plt.subplots()
+    ax.hist(df["Salary_LPA"], bins=30)
+    ax.set_title("Salary Distribution")
+    ax.set_xlabel("Salary (LPA)")
+    ax.set_ylabel("Frequency")
+    st.pyplot(fig)
 
     with tab4:
         if "Skill_Programs" in df.columns:
